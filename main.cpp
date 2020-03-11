@@ -1,15 +1,19 @@
 #include <iostream>
 #include "UserProcess.h"
+#include <openssl/bio.h>
+#include <openssl/x509.h>
+#include <openssl/pem.h>
 
 int main()
 {
-    std::vector<pid_t> pids = GetAllProcessPidByName("iTerm2");
-    if (pids.size() != 0)
+    std::string filePath = "/Library/Application Support/SkyGuard/SkyGuard Endpoint/EndpointAgent/bin/EndpointClientGUI.app";
+    std::string signStr = "99U9VSN546";
+    if (VerifyCodeSign(filePath, signStr) == true)
     {
-        printf("pid:%d\n", pids[0]);
+        std::cout << "签名验证成功!" << std::endl;
     } else
     {
-        printf("获取进程ID失败\n");
+        std::cout << "签名验证失败!" << std::endl;
     }
     return 0;
 }
