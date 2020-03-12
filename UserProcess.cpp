@@ -47,7 +47,7 @@ std::vector<pid_t> GetAllProcessPidByName(const char *procName)
 std::map<pid_t, std::string> GetAllProcessPidsAndPaths()
 {
     std::map<pid_t, std::string> result;
-    int numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, NULL, 0);
+    int numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, nullptr, 0);
     pid_t pids[numberOfProcesses];
     bzero(pids, sizeof(pids));
     proc_listpids(PROC_ALL_PIDS, 0, pids, sizeof(pids));
@@ -75,7 +75,7 @@ std::string GetProcessNameByPid(pid_t pid)
     return processName;
 }
 
-bool VerifyCodeSign(std::string filePath, std::string signString)
+bool VerifyCodeSign(const std::string &filePath, const std::string &signString)
 {
     bool result = false;
     FILE *fp;
@@ -87,8 +87,6 @@ bool VerifyCodeSign(std::string filePath, std::string signString)
         while (fgets(buf, 2048, fp) != nullptr)
         {
             std::string cmdResult = buf;
-//            std::cout << "输出" << std::endl;
-//            std::cout << buf << std::endl;
             if (cmdResult.find(signString) != cmdResult.npos)
             {
                 result = true;
@@ -96,6 +94,66 @@ bool VerifyCodeSign(std::string filePath, std::string signString)
             }
         }
         pclose(fp);
+    }
+    return result;
+}
+
+std::map<pid_t, std::string> GetAllProcessInfoByName(const std::string &procName)
+{
+    std::map<pid_t, std::string> result;
+    int numberOfProcesses = proc_listpids(PROC_ALL_PIDS, 0, nullptr, 0);
+    pid_t pids[numberOfProcesses];
+    bzero(pids, sizeof(pids));
+    proc_listpids(PROC_ALL_PIDS, 0, pids, sizeof(pids));
+    for (int i = 0; i < numberOfProcesses; i++)
+    {
+        if (pids[i] == 0)
+        {
+            continue;
+        }
+
+        std::string processName = GetProcessNameByPid(pids[i]);
+        if (processName == procName)
+        {
+            char pathBuffer[PROC_PIDPATHINFO_MAXSIZE] = {0};
+            proc_pidpath(pids[i], pathBuffer, sizeof(pathBuffer));
+            if (strlen(pathBuffer) > 0)
+            {
+                result[pids[i]] = pathBuffer;
+            }
+        }
+    }
+    return result;
+}
+
+bool IsSkyGuardRunning()
+{
+    bool result = false;
+    std::string procName = "EndpointClientGUI";
+    std::string signString = "99U9VSN546";
+    auto processes = GetAllProcessInfoByName(procName);
+    for (auto &processe : processes)
+    {
+        if (VerifyCodeSign(processe.second, signString))
+        {
+            result = true;
+            break;
+        }
+    }
+    return result;
+}
+
+std::string GetProcessPathByPid(pid_t pid)
+{
+    std::string result;
+    if (pid != -1)
+    {
+        char pathBuffer[PROC_PIDPATHINFO_MAXSIZE] = {0};
+        proc_pidpath(pid, pathBuffer, sizeof(pathBuffer));
+        if (strlen(pathBuffer) > 0)
+        {
+            result = pathBuffer;
+        }
     }
     return result;
 }
