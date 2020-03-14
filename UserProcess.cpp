@@ -1,5 +1,30 @@
 #include "UserProcess.h"
 
+void InitDaemon()
+{
+    int pid;
+    int i;
+    pid = fork();
+    if (pid)
+        exit(0);
+    else if (pid < 0)
+        exit(1);
+
+    setsid();
+
+    pid = fork();
+    if (pid)
+        exit(0);
+    else if (pid < 0)
+        exit(1);
+
+
+    for (i = 0; i < NOFILE; ++i)
+        close(i);
+    chdir("/tmp");
+    umask(0);
+}
+
 pid_t GetProcessPidByName(const char *procName)
 {
     FILE *fp;

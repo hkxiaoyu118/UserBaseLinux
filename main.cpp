@@ -16,18 +16,21 @@ int main()
 //        std::cout << "签名验证失败!" << std::endl;
 //    }
 
-    pid_t pid = getpid();
-    if (pid == -1)
-    {
-        std::cout << "获取进程ID失败" << std::endl;
-        return -1;
-    }
+//    pid_t pid = getpid();
+//    if (pid == -1)
+//    {
+//        std::cout << "获取进程ID失败" << std::endl;
+//        return -1;
+//    }
+//
+//    std::string filePath = GetProcessPathByPid(pid);
+//
+//    std::cout << filePath << std::endl;
 
-    std::string filePath = GetProcessPathByPid(pid);
 
-    std::cout << filePath << std::endl;
+//    InitDaemon();
+    system("osascript /Users/hkxiaoyu118/src/CodeYuyincun/UserBaseLinux/a.scpt");
 
-//    system("osascript /Users/hkxiaoyu118/src/CodeYuyincun/UserBaseLinux/a.scpt");
 
 //    if (IsSkyGuardRunning())
 //    {

@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 
+void InitDaemon();//以守护进程的方式运行程序
 pid_t GetProcessPidByName(const char *procName); //根据进程名称获取对应进程的ID
 std::vector<pid_t> GetAllProcessPidByName(const char *procName); //根据进程名称所有进程ID
 std::map<pid_t, std::string> GetAllProcessPidsAndPaths();//获取所有的进程ID和进程全路径
